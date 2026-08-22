@@ -1,0 +1,2 @@
+SELECT STRFTIME('%Y-%m', q_orders."order_date") AS "d0", t1."country" AS "d1", SUM(q_orders."amount_total") AS "m0", COUNT(*) AS "n_orders" FROM "orders" "q_orders" LEFT JOIN "customers" "t1" ON t1."id" = q_orders."customer_id" WHERE q_orders."status" = ? AND t1."plan" IN (?, ?) AND q_orders."order_date" >= ? AND q_orders."order_date" < ? GROUP BY "d0", "d1" ORDER BY "d0" ASC, "m0" DESC LIMIT 500
+-- params: ["paid","pro","enterprise","2026-01-01","2026-07-01"]

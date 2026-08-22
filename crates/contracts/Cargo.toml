@@ -1,0 +1,19 @@
+[package]
+name = "querora-contracts"
+description = "Shared data contracts for Querora (single source of truth)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+schemars = "1"
+serde = { workspace = true }
+serde_json = { workspace = true }
+ts-rs = { version = "11", features = ["serde-json-impl", "chrono-impl", "no-serde-warnings"] }
+chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }

@@ -1,0 +1,81 @@
+name: Release
+
+# Manual-only: triggered from the Actions tab or `gh workflow run`
+# (quota control; owner's choice 2026-08-16).
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    name: macOS DMG (sign when secrets present)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Prepare MCP shim (externalBin, release)
+        run: node scripts/prepare-shim.mjs --release
+      - name: Detect signing config
+        id: sign
+        run: |
+          if [ -n "$APPLE_CERTIFICATE" ] && [ -n "$APPLE_SIGNING_IDENTITY" ] && [ -n "$APPLE_ID" ]; then
+            echo "mode=signed" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=unsigned" >> "$GITHUB_OUTPUT"
+            echo "::warning::Apple secrets absent — building UNSIGNED (beta channel fallback)"
+          fi
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+      - name: Build DMG (signed + notarized)
+        if: steps.sign.outputs.mode == 'signed'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Querora ${{ github.ref_name }}"
+          releaseDraft: true
+          prerelease: false
+      - name: Build DMG (unsigned fallback)
+        if: steps.sign.outputs.mode == 'unsigned'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Querora ${{ github.ref_name }} (unsigned beta)"
+          releaseDraft: true
+          prerelease: true
+      - name: SBOM (cargo auditable)
+        run: |
+          cargo install cargo-auditable --locked || true
+          cargo auditable build --release -p querora-app || cargo build --release -p querora-app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: querora-dmg
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
+            target/release/querora-mcp
+          if-no-files-found: warn

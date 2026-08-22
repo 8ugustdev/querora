@@ -1,0 +1,22 @@
+{
+  "name": "@querora/sidecar-pi",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Querora pi agent-driver sidecar: pi SDK session + custom AgentTools bridging the toolapi socket; BYOK custom-provider host.",
+  "type": "module",
+  "bin": {
+    "querora-pi-sidecar": "dist/main.js"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types src/**/*.test.ts 2>/dev/null || echo no tests",
+    "build": "tsc --noEmit && node build.mjs"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "~5.7.2"
+  }
+}

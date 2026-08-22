@@ -1,0 +1,13 @@
+#!/bin/sh
+# Querora pre-commit: fmt check always; clippy only when Rust files staged.
+set -e
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+case "$staged" in
+  *.rs*)
+    cargo fmt --all --check
+    cargo clippy --workspace --all-targets -- -D warnings
+    ;;
+  *)
+    exit 0
+    ;;
+esac

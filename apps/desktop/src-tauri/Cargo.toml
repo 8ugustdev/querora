@@ -1,0 +1,30 @@
+[package]
+name = "querora-app"
+description = "Querora desktop app (Tauri v2 shell)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+name = "querora_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+querora-contracts = { path = "../../../crates/contracts" }
+querora-core = { path = "../../../crates/core" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+dirs = "6"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tauri = { version = "2", features = [] }

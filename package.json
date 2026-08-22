@@ -1,0 +1,24 @@
+{
+  "name": "querora",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Local-first conversational BI for macOS — the AI brain is your CLI agent.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.26.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "scripts": {
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "build": "pnpm -r run build",
+    "check": "pnpm typecheck && pnpm test && pnpm build",
+    "tauri": "pnpm -C apps/desktop tauri",
+    "hooks:install": "git config core.hooksPath .githooks"
+  }
+}

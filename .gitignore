@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+target/
+*.local
+
+# rust
+**/*.rs.bk
+
+# testing
+coverage/
+
+# tauri generated (mobile)
+apps/desktop/src-tauri/gen/
+apps/desktop/src-tauri/binaries/
+
+plans/
+.pi/
+
+# editor/os
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# env
+.env
+.env.*
+
+# python
+__pycache__/

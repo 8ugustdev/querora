@@ -1,0 +1,4 @@
+# macOS 26 beta linker emits mis-aligned LINKEDIT in chained-fixups dylibs
+# (breaks dlopen of proc-macros); disable fixup chains until toolchain stabilizes
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-Wl,-no_fixup_chains"]

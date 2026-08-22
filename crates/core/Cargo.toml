@@ -1,0 +1,36 @@
+[package]
+name = "querora-core"
+description = "Querora core: storage, keyring, toolapi, connectors, compiler, semantic layer"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[features]
+duckdb = ["dep:duckdb"]
+
+[lints]
+workspace = true
+
+[dependencies]
+querora-contracts = { path = "../contracts" }
+async-trait = "0.1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+dirs = "6"
+keyring = { version = "3", features = ["apple-native"] }
+rand = "0.8"
+rust_decimal = "1"
+schemars = "1"
+serde = { workspace = true }
+serde_json = { workspace = true }
+sqlx = { version = "0.8", default-features = false, features = ["sqlite", "postgres", "mysql", "runtime-tokio", "macros", "migrate", "chrono", "rust_decimal"] }
+sqlparser = "0.62"
+duckdb = { version = "1.4", optional = true, features = ["bundled"] }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = "0.1"
+url = "2"
+which = "7"
+uuid = { version = "1", features = ["v4"] }
